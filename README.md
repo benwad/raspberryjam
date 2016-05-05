@@ -1,1 +1,1 @@
-A really simple synth enging using portaudio, targeted at the Raspberry Pi
+A really simple synth engine using portaudio, targeted at the Raspberry Pi
