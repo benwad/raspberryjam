@@ -2,39 +2,25 @@
 
 #include "portaudio.h"
 
+#include "Synth.h"
+
 #define SAMPLE_RATE (44100)
 
-typedef struct
-{
-	float left_phase;
-	float right_phase;
-} paTestData;
 
-static paTestData data;
+//static FrameData data;
+static Synth mySynth;
 
 static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
 						const PaStreamCallbackTimeInfo *timeinfo,
 						PaStreamCallbackFlags statusFlags,
 						void *userData)
 {
-	paTestData *data = (paTestData*)userData;
+	FrameData *data = (FrameData *)userData;
 	float *out = (float*)outputBuffer;
 	unsigned int i;
 	(void)inputBuffer; // prevent unused variable warning
 
-	for (i=0; i<framesPerBuffer; i++)
-	{
-		*out++ = data->left_phase; // left
-		*out++ = data->right_phase; // right
-
-		// simple saw
-		data->left_phase += 0.02f;
-		// when signal reaches top, drop back down
-		if (data->left_phase >= 1.0f) data->left_phase -= 2.0f;
-		// higher pitch so we can distinguish left and right
-		data->right_phase += 0.03f;
-		if (data->right_phase >= 1.0f) data->right_phase -= 2.0f;
-	}
+	mySynth.WriteFrames(framesPerBuffer, out);
 
 	return 0;
 }
@@ -58,8 +44,8 @@ int main(int argc, char* argv[])
 								paFloat32,		// 32-bit floating point output
 								SAMPLE_RATE,
 								256,			// frames per buffer
-								paCallback, // callback function
-								&data );
+								paCallback, 	// callback function
+								NULL );
 
 	if (err != paNoError) {
 		std::cout << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
