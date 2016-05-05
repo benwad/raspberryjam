@@ -2,10 +2,11 @@
 
 FrameData Synth::NextFrame()
 {
-	this->currentFrame.left_phase += 0.02f;
+	this->currentFrame.left_phase += increment;
 	if (this->currentFrame.left_phase >= 1.0f) {
 		this->currentFrame.left_phase -= 2.0f;
 	}
+	this->currentFrame.right_phase += increment;
 	if (this->currentFrame.right_phase >= 1.0f) {
 		this->currentFrame.right_phase -= 2.0f;
 	}
@@ -22,4 +23,14 @@ void Synth::WriteFrames(unsigned long numFrames, float* out)
 		*out++ = nextFrame.left_phase; // left
 		*out++ = nextFrame.right_phase; // right
 	}
+}
+
+void Synth::SetFrequency(unsigned int frequency)
+{
+	/*
+	wavelength in frames: SAMPLE_RATE / frequency
+	we want to increase by 2.0f per cycle
+	so 2.0f / wavelength
+	*/
+	this->increment = 2.0f / (SAMPLE_RATE / frequency);
 }

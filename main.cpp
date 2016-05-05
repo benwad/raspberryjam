@@ -4,9 +4,6 @@
 
 #include "Synth.h"
 
-#define SAMPLE_RATE (44100)
-
-
 //static FrameData data;
 static Synth mySynth;
 
@@ -15,9 +12,8 @@ static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long
 						PaStreamCallbackFlags statusFlags,
 						void *userData)
 {
-	FrameData *data = (FrameData *)userData;
+	//FrameData *data = (FrameData *)userData;
 	float *out = (float*)outputBuffer;
-	unsigned int i;
 	(void)inputBuffer; // prevent unused variable warning
 
 	mySynth.WriteFrames(framesPerBuffer, out);
@@ -45,12 +41,14 @@ int main(int argc, char* argv[])
 								SAMPLE_RATE,
 								256,			// frames per buffer
 								paCallback, 	// callback function
-								NULL );
+								NULL );			// maybe use userData?
 
 	if (err != paNoError) {
 		std::cout << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
 		return 2;
 	}
+
+	mySynth.SetFrequency(440);
 
 	std::cout << "Starting stream..." << std::endl;
 	err = Pa_StartStream(stream);
