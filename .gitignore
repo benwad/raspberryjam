@@ -3,3 +3,4 @@ portaudio.h
 *.swp
 *.o
 portaudio/
+raspberrysynth

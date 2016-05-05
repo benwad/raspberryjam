@@ -1,11 +1,14 @@
 #include <iostream>
+#include <thread>
 
 #include "portaudio.h"
 
 #include "Synth.h"
+#include "ArduinoInput.h"
 
 //static FrameData data;
 static Synth mySynth;
+static ArduinoInput arduinoInput;
 
 static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
 						const PaStreamCallbackTimeInfo *timeinfo,
@@ -59,7 +62,10 @@ int main(int argc, char* argv[])
 
 	mySynth.NoteOn();
 
+	std::thread controlThread(&ArduinoInput::RunLoop, arduinoInput);
+
 	std::cout << "Press ENTER to NoteOff..." << std::endl;
+
 	getwchar();
 
 	mySynth.NoteOff();
@@ -73,7 +79,6 @@ int main(int argc, char* argv[])
 		std::cout << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;
 		return 2;
 	}
-
 
 	err = Pa_Terminate();
 	if (err != paNoError) {
