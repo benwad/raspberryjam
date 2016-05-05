@@ -1,5 +1,10 @@
 #pragma once
 
+/*
+	This is taken from "Butterworth Optimized C++ Class" by neotec on musicdsp.org
+	http://musicdsp.org/showArchiveComment.php?ArchiveID=243
+*/
+
 class CFilterButterworth24db
 {
 public:
