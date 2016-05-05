@@ -1,5 +1,11 @@
 #include "Synth.h"
 
+Synth::Synth()
+{
+	this->SetFilterParams(1600.0f, 1.0f);
+	this->filterEnv.SetParams(88200, 22050, 0.8f, 22050);
+}
+
 FrameData Synth::NextFrame()
 {
 	this->currentFrame.left_phase += increment;
@@ -12,8 +18,14 @@ FrameData Synth::NextFrame()
 	}
 
 	float envValue = this->envelope.NextFrame();
+	this->SetFilterParams(this->filterEnv.NextFrame() * 44050.0f, 0.8f);
 
-	return this->currentFrame * envValue;
+	float frameVal = this->filter.Run(this->currentFrame.left_phase * envValue);
+
+	return FrameData(
+		frameVal,
+		frameVal
+	);
 }
 
 void Synth::WriteFrames(unsigned long numFrames, float* out)
@@ -37,10 +49,16 @@ void Synth::SetFrequency(unsigned int frequency)
 	this->increment = 2.0f / (SAMPLE_RATE / frequency);
 }
 
+void Synth::SetFilterParams(float cutoff, float q) {
+	this->filter.Set(cutoff, q);
+}
+
 void Synth::NoteOn() {
 	envelope.NoteOn();
+	filterEnv.NoteOn();
 }
 
 void Synth::NoteOff() {
 	envelope.NoteOff();
+	filterEnv.NoteOff();
 }

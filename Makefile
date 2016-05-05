@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-c -Wall -std=c++11
 LDFLAGS=-lportaudio -lasound
-SOURCES=main.cpp Synth.cpp ADSR.cpp
+SOURCES=main.cpp Synth.cpp ADSR.cpp FilterButterworth24db.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=raspberrysynth
 

@@ -1,5 +1,4 @@
-#ifndef ADSR_H
-#define ADSR_H
+#pragma once
 
 class ADSR {
 	enum State {
@@ -32,5 +31,3 @@ class ADSR {
 		void NoteOn();
 		void NoteOff();
 };
-
-#endif

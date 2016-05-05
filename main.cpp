@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
-	mySynth.SetFrequency(440);
+	mySynth.SetFrequency(220);
 
 	std::cout << "Starting stream..." << std::endl;
 	err = Pa_StartStream(stream);

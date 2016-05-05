@@ -1,9 +1,9 @@
-#ifndef SYNTH_H
-#define SYNTH_H
+#pragma once
 
 #define SAMPLE_RATE (44100)
 
 #include "ADSR.h"
+#include "FilterButterworth24db.h"
 
 struct FrameData
 {
@@ -21,13 +21,15 @@ class Synth {
 	FrameData currentFrame;
 	float increment;		// the increase in amplitude between two frames
 	ADSR envelope;
+	CFilterButterworth24db filter;
+	ADSR filterEnv;
 
 	public:
+		Synth();
 		FrameData NextFrame();
 		void WriteFrames(unsigned long numFrames, float* out);
 		void SetFrequency(unsigned int frequency);
+		void SetFilterParams(float cutoff, float q);
 		void NoteOn();
 		void NoteOff();
 };
-
-#endif
