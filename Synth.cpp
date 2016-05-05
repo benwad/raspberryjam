@@ -11,7 +11,9 @@ FrameData Synth::NextFrame()
 		this->currentFrame.right_phase -= 2.0f;
 	}
 
-	return this->currentFrame;
+	float envValue = this->envelope.NextFrame();
+
+	return this->currentFrame * envValue;
 }
 
 void Synth::WriteFrames(unsigned long numFrames, float* out)
@@ -33,4 +35,12 @@ void Synth::SetFrequency(unsigned int frequency)
 	so 2.0f / wavelength
 	*/
 	this->increment = 2.0f / (SAMPLE_RATE / frequency);
+}
+
+void Synth::NoteOn() {
+	envelope.NoteOn();
+}
+
+void Synth::NoteOff() {
+	envelope.NoteOff();
 }

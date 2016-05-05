@@ -57,6 +57,13 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
+	mySynth.NoteOn();
+
+	std::cout << "Press ENTER to NoteOff..." << std::endl;
+	getwchar();
+
+	mySynth.NoteOff();
+
 	std::cout << "Press ENTER to exit..." << std::endl;
 	getwchar();
 
