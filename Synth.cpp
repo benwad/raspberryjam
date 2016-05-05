@@ -18,7 +18,7 @@ FrameData Synth::NextFrame()
 
 void Synth::WriteFrames(unsigned long numFrames, float* out)
 {
-	for (int i=0; i<numFrames; i++)
+	for (unsigned long i=0; i<numFrames; i++)
 	{
 		FrameData nextFrame = this->NextFrame();
 

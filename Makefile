@@ -1,5 +1,5 @@
-CC=clang++
-CFLAGS=-c -Wall
+CC=g++
+CFLAGS=-c -Wall -std=c++11
 LDFLAGS=-lportaudio -lasound
 SOURCES=main.cpp Synth.cpp ADSR.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
