@@ -1,16 +1,21 @@
 #pragma once
 
+#include <mutex>
+
+#include "WorkQueue.h"
+
 class ArduinoInput {
 
-	float potVal;
 	const char *portname = "/dev/cu.usbmodem1411";
 	int fd;
 	char buf[32];
 	char numberBuf[4];
+	WorkQueue<float>* cutoffQueue;
 
 	public:
+
 		ArduinoInput();
-		float PotVal() { return this->potVal; }
 		void RunLoop();
+		void SetQueue(WorkQueue<float>* queue) { this->cutoffQueue = queue; }
 
 };

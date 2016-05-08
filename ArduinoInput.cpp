@@ -56,7 +56,7 @@ ArduinoInput::ArduinoInput() {
 	/* Flush anything already in the serial buffer */
 	tcflush(this->fd, TCIFLUSH);
 
-	memset(&this->numberBuf, NULL, sizeof(char)*4);
+	memset(&this->numberBuf, 0, sizeof(char)*4);
 }
 
 void ArduinoInput::RunLoop() {
@@ -70,9 +70,9 @@ void ArduinoInput::RunLoop() {
 			// for the control value. Then reset the numberBuf
 			if (this->buf[i] == '\n') {
 				int potMessage = atoi(this->numberBuf);
-				this->potVal = potMessage / 1024.0;
-				printf("%.2f\n", this->potVal);
-				memset(&this->numberBuf, NULL, sizeof(char)*4);
+				float potVal = potMessage / 1024.0;
+				this->cutoffQueue->Add(potVal);
+				memset(&this->numberBuf, 0, sizeof(char)*4);
 			}
 			else {
 				// Otherwise, just store this buffer character

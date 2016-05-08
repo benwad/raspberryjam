@@ -4,6 +4,7 @@
 
 #include "ADSR.h"
 #include "FilterButterworth24db.h"
+#include "WorkQueue.h"
 
 struct FrameData
 {
@@ -23,11 +24,13 @@ class Synth {
 	ADSR envelope;
 	CFilterButterworth24db filter;
 	ADSR filterEnv;
+	WorkQueue<float>* cutoffQueue;
 
 	public:
 		Synth();
 		FrameData NextFrame();
 		void WriteFrames(unsigned long numFrames, float* out);
+		void SetCutoffQueue(WorkQueue<float>* queue);
 		void SetFrequency(unsigned int frequency);
 		void SetFilterParams(float cutoff, float q);
 		void NoteOn();

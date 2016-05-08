@@ -18,7 +18,13 @@ FrameData Synth::NextFrame()
 	}
 
 	float envValue = this->envelope.NextFrame();
-	this->SetFilterParams(this->filterEnv.NextFrame() * 44050.0f, 0.8f);
+
+	// See if we've got a new value from the input, and pop
+	// it if we do
+	if (this->cutoffQueue->Size() > 0) {
+		float cutoffValue = this->cutoffQueue->Remove();
+		this->SetFilterParams(cutoffValue * 10000.0f, 0.8f);
+	}
 
 	float frameVal = this->filter.Run(this->currentFrame.left_phase * envValue);
 
@@ -37,6 +43,11 @@ void Synth::WriteFrames(unsigned long numFrames, float* out)
 		*out++ = nextFrame.left_phase; // left
 		*out++ = nextFrame.right_phase; // right
 	}
+}
+
+void Synth::SetCutoffQueue(WorkQueue<float>* queue)
+{
+	this->cutoffQueue = queue;
 }
 
 void Synth::SetFrequency(unsigned int frequency)

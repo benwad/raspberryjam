@@ -5,10 +5,10 @@
 
 #include "Synth.h"
 #include "ArduinoInput.h"
+#include "WorkQueue.h"
 
 //static FrameData data;
 static Synth mySynth;
-static ArduinoInput arduinoInput;
 
 static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
 						const PaStreamCallbackTimeInfo *timeinfo,
@@ -28,6 +28,11 @@ int main(int argc, char* argv[])
 {
 	PaStream *stream;
 	PaError err;
+
+	WorkQueue<float> cutoffQueue;
+	ArduinoInput arduinoInput;
+	arduinoInput.SetQueue(&cutoffQueue);
+	mySynth.SetCutoffQueue(&cutoffQueue);
 
 	std::cout << "Initialising PortAudio..." << std::endl;
 	err = Pa_Initialize();
@@ -63,6 +68,7 @@ int main(int argc, char* argv[])
 	mySynth.NoteOn();
 
 	std::thread controlThread(&ArduinoInput::RunLoop, arduinoInput);
+	controlThread.detach();
 
 	std::cout << "Press ENTER to NoteOff..." << std::endl;
 
