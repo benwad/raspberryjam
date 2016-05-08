@@ -3,8 +3,10 @@
 #define SAMPLE_RATE (44100)
 
 #include "ADSR.h"
+#include "LFO.h"
 #include "FilterButterworth24db.h"
 #include "WorkQueue.h"
+#include "ArduinoMessage.h"
 
 struct FrameData
 {
@@ -23,16 +25,19 @@ class Synth {
 	float increment;		// the increase in amplitude between two frames
 	ADSR envelope;
 	CFilterButterworth24db filter;
-	ADSR filterEnv;
-	WorkQueue<float>* cutoffQueue;
+	LFO filterLfo;
+	WorkQueue<ArduinoMessage<float> >* cutoffQueue;
+	float cutoffVal;
+	float resonanceVal;
 
 	public:
 		Synth();
 		FrameData NextFrame();
 		void WriteFrames(unsigned long numFrames, float* out);
-		void SetCutoffQueue(WorkQueue<float>* queue);
+		void SetCutoffQueue(WorkQueue<ArduinoMessage<float> >* queue);
 		void SetFrequency(unsigned int frequency);
 		void SetFilterParams(float cutoff, float q);
+		void UpdateFilterParams();
 		void NoteOn();
 		void NoteOff();
 };

@@ -71,7 +71,14 @@ void ArduinoInput::RunLoop() {
 			if (this->buf[i] == '\n') {
 				int potMessage = atoi(this->numberBuf);
 				float potVal = potMessage / 1024.0;
-				this->cutoffQueue->Add(potVal);
+				ArduinoMessage<float> msg(this->messageType, potVal);
+				this->messageQueue->Add(msg);
+				memset(&this->numberBuf, 0, sizeof(char)*4);
+			}
+			else if (this->buf[i] == ':') {
+				// This means we've finished reading the message type
+				// and we should move on to reading the message
+				this->messageType = atoi(this->numberBuf);
 				memset(&this->numberBuf, 0, sizeof(char)*4);
 			}
 			else {
@@ -85,6 +92,5 @@ void ArduinoInput::RunLoop() {
 				}
 			}
 		}
-		//printf(buf);
 	}
 }

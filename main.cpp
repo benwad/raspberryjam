@@ -7,19 +7,16 @@
 #include "ArduinoInput.h"
 #include "WorkQueue.h"
 
-//static FrameData data;
-static Synth mySynth;
-
 static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
 						const PaStreamCallbackTimeInfo *timeinfo,
 						PaStreamCallbackFlags statusFlags,
 						void *userData)
 {
-	//FrameData *data = (FrameData *)userData;
 	float *out = (float*)outputBuffer;
 	(void)inputBuffer; // prevent unused variable warning
 
-	mySynth.WriteFrames(framesPerBuffer, out);
+	Synth* mySynth = (Synth*)userData;
+	mySynth->WriteFrames(framesPerBuffer, out);
 
 	return 0;
 }
@@ -29,9 +26,10 @@ int main(int argc, char* argv[])
 	PaStream *stream;
 	PaError err;
 
-	WorkQueue<float> cutoffQueue;
+	WorkQueue<ArduinoMessage<float> > cutoffQueue;
 	ArduinoInput arduinoInput;
 	arduinoInput.SetQueue(&cutoffQueue);
+	Synth mySynth;
 	mySynth.SetCutoffQueue(&cutoffQueue);
 
 	std::cout << "Initialising PortAudio..." << std::endl;
@@ -49,7 +47,7 @@ int main(int argc, char* argv[])
 								SAMPLE_RATE,
 								256,			// frames per buffer
 								paCallback, 	// callback function
-								NULL );			// maybe use userData?
+								&mySynth );		// pointer to Synth object
 
 	if (err != paNoError) {
 		std::cout << "PortAudio error: " << Pa_GetErrorText(err) << std::endl;

@@ -1,14 +1,22 @@
 CC=g++
 CFLAGS=-c -Wall -std=c++11 -g
 LDFLAGS=-lportaudio
-SOURCES=main.cpp Synth.cpp ADSR.cpp FilterButterworth24db.cpp ArduinoInput.cpp
+SOURCES=main.cpp Synth.cpp ADSR.cpp FilterButterworth24db.cpp ArduinoInput.cpp LFO.cpp
+INPUTTEST_SOURCES=inputtest.cpp ArduinoInput.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
+INPUTTEST_OBJECTS=$(INPUTTEST_SOURCES:.cpp=.o)
 EXECUTABLE=raspberrysynth
+INPUTTEST_EXECUTABLE=inputtest
 
 all: $(SOURCES) $(EXECUTABLE)
 
+inputtest: $(INPUTTEST_SOURCES) $(INPUTTEST_EXECUTABLE)
+
 $(EXECUTABLE): $(OBJECTS) 
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+$(INPUTTEST_EXECUTABLE): $(INPUTTEST_OBJECTS)
+	$(CC) $(LDFLAGS) $(INPUTTEST_OBJECTS) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@

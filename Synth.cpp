@@ -1,9 +1,11 @@
 #include "Synth.h"
 
 Synth::Synth()
+	: cutoffVal(1600.0f),
+	resonanceVal(0.8f)
 {
-	this->SetFilterParams(1600.0f, 1.0f);
-	this->filterEnv.SetParams(88200, 22050, 0.8f, 22050);
+	this->SetFilterParams(cutoffVal, resonanceVal);
+	this->filterLfo.SetParams(1.0f, 1.0f);
 }
 
 FrameData Synth::NextFrame()
@@ -22,9 +24,18 @@ FrameData Synth::NextFrame()
 	// See if we've got a new value from the input, and pop
 	// it if we do
 	if (this->cutoffQueue->Size() > 0) {
-		float cutoffValue = this->cutoffQueue->Remove();
-		this->SetFilterParams(cutoffValue * 10000.0f, 0.8f);
+		ArduinoMessage<float> msg = this->cutoffQueue->Remove();
+		if (msg.messageType == 0) {
+			this->cutoffVal = msg.messageValue * 10000.0f;
+		}
+		else {
+			float newWavelength = msg.messageValue * 10.0f;
+			std::cout << "New wavelength: " << newWavelength << std::endl;
+			this->filterLfo.SetParams(newWavelength, 1.0f);
+		}
 	}
+
+	this->UpdateFilterParams();
 
 	float frameVal = this->filter.Run(this->currentFrame.left_phase * envValue);
 
@@ -45,7 +56,7 @@ void Synth::WriteFrames(unsigned long numFrames, float* out)
 	}
 }
 
-void Synth::SetCutoffQueue(WorkQueue<float>* queue)
+void Synth::SetCutoffQueue(WorkQueue<ArduinoMessage<float> >* queue)
 {
 	this->cutoffQueue = queue;
 }
@@ -60,16 +71,23 @@ void Synth::SetFrequency(unsigned int frequency)
 	this->increment = 2.0f / (SAMPLE_RATE / frequency);
 }
 
-void Synth::SetFilterParams(float cutoff, float q) {
+void Synth::SetFilterParams(float cutoff, float q)
+{
 	this->filter.Set(cutoff, q);
 }
 
-void Synth::NoteOn() {
-	envelope.NoteOn();
-	filterEnv.NoteOn();
+void Synth::UpdateFilterParams()
+{
+	float lfoValue = this->filterLfo.NextFrame();
+	this->SetFilterParams(this->cutoffVal * lfoValue, this->resonanceVal);
 }
 
-void Synth::NoteOff() {
+void Synth::NoteOn()
+{
+	envelope.NoteOn();
+}
+
+void Synth::NoteOff()
+{
 	envelope.NoteOff();
-	filterEnv.NoteOff();
 }

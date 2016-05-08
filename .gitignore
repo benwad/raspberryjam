@@ -4,3 +4,4 @@ portaudio.h
 *.o
 portaudio/
 raspberrysynth
+RaspberryJam/
