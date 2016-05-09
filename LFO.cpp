@@ -15,5 +15,5 @@ float LFO::NextFrame()
 		this->phase -= TWO_PI;
 	}
 
-	return sin(this->phase);
+	return sin(this->phase) + 1.0f;
 }
