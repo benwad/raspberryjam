@@ -29,13 +29,24 @@ FrameData Synth::NextFrame()
 			this->cutoffVal = msg.messageValue * 10000.0f;
 		}
 		else {
-			float newWavelength = msg.messageValue * 10.0f;
-			std::cout << "New wavelength: " << newWavelength << std::endl;
+			float newWavelength = msg.messageValue * 20.0f;
 			this->filterLfo.SetParams(newWavelength, 1.0f);
 		}
 	}
 
 	this->UpdateFilterParams();
+
+	// Check for notes
+	if (this->noteQueue->Size() > 0) {
+		MidiMessage msg = this->noteQueue->Remove();
+		if (msg.Velocity() > 0) {
+			this->SetFrequency(msg.NoteFrequency());
+			this->NoteOn();
+		}
+		else {
+			this->NoteOff();
+		}
+	}
 
 	float frameVal = this->filter.Run(this->currentFrame.left_phase * envValue);
 
@@ -61,7 +72,12 @@ void Synth::SetCutoffQueue(WorkQueue<ArduinoMessage<float> >* queue)
 	this->cutoffQueue = queue;
 }
 
-void Synth::SetFrequency(unsigned int frequency)
+void Synth::SetNoteQueue(WorkQueue<MidiMessage>* queue)
+{
+	this->noteQueue = queue;
+}
+
+void Synth::SetFrequency(float frequency)
 {
 	/*
 	wavelength in frames: SAMPLE_RATE / frequency

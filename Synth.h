@@ -7,6 +7,7 @@
 #include "FilterButterworth24db.h"
 #include "WorkQueue.h"
 #include "ArduinoMessage.h"
+#include "MidiMessage.h"
 
 struct FrameData
 {
@@ -27,6 +28,7 @@ class Synth {
 	CFilterButterworth24db filter;
 	LFO filterLfo;
 	WorkQueue<ArduinoMessage<float> >* cutoffQueue;
+	WorkQueue<MidiMessage>* noteQueue;
 	float cutoffVal;
 	float resonanceVal;
 
@@ -35,7 +37,8 @@ class Synth {
 		FrameData NextFrame();
 		void WriteFrames(unsigned long numFrames, float* out);
 		void SetCutoffQueue(WorkQueue<ArduinoMessage<float> >* queue);
-		void SetFrequency(unsigned int frequency);
+		void SetNoteQueue(WorkQueue<MidiMessage>* queue);
+		void SetFrequency(float frequency);
 		void SetFilterParams(float cutoff, float q);
 		void UpdateFilterParams();
 		void NoteOn();

@@ -6,6 +6,8 @@
 #include "Synth.h"
 #include "ArduinoInput.h"
 #include "WorkQueue.h"
+#include "MidiInput.h"
+#include "MidiMessage.h"
 
 static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
 						const PaStreamCallbackTimeInfo *timeinfo,
@@ -21,16 +23,25 @@ static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long
 	return 0;
 }
 
+void runmidi(WorkQueue<MidiMessage>* queue)
+{
+	MidiInput input;
+	input.SetQueue(queue);
+	input.RunLoop();
+}
+
 int main(int argc, char* argv[])
 {
 	PaStream *stream;
 	PaError err;
 
+	WorkQueue<MidiMessage> midiQueue;
 	WorkQueue<ArduinoMessage<float> > cutoffQueue;
 	ArduinoInput arduinoInput;
 	arduinoInput.SetQueue(&cutoffQueue);
 	Synth mySynth;
 	mySynth.SetCutoffQueue(&cutoffQueue);
+	mySynth.SetNoteQueue(&midiQueue);
 
 	std::cout << "Initialising PortAudio..." << std::endl;
 	err = Pa_Initialize();
@@ -54,7 +65,7 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
-	mySynth.SetFrequency(220);
+	mySynth.SetFrequency(220.0f);
 
 	std::cout << "Starting stream..." << std::endl;
 	err = Pa_StartStream(stream);
@@ -63,16 +74,10 @@ int main(int argc, char* argv[])
 		return 2;
 	}
 
-	mySynth.NoteOn();
-
+	std::thread midiThread(&runmidi, &midiQueue);
+	midiThread.detach();
 	std::thread controlThread(&ArduinoInput::RunLoop, arduinoInput);
 	controlThread.detach();
-
-	std::cout << "Press ENTER to NoteOff..." << std::endl;
-
-	getwchar();
-
-	mySynth.NoteOff();
 
 	std::cout << "Press ENTER to exit..." << std::endl;
 	getwchar();
