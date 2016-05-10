@@ -2,6 +2,12 @@
 
 #include "MidiInput.h"
 
+#ifdef __platform_mac__
+#define MIDI_DEVICE_ID 0
+#else
+#define MIDI_DEVICE_ID 3
+#endif
+
 MidiInput::MidiInput()
 {
 	PmError err;
@@ -12,7 +18,7 @@ MidiInput::MidiInput()
 
 	int numDevices = Pm_CountDevices();
 	std::cout << numDevices << " devices" << std::endl;
-	err = Pm_OpenInput(&(this->stream), 0, 0, 128, 0, 0);
+	err = Pm_OpenInput(&(this->stream), 0, MIDI_DEVICE_ID, 128, 0, 0);
 	if (err != pmNoError) {
 		std::cout << "Error opening input: " << Pm_GetErrorText(err) << std::endl;
 	}
@@ -38,7 +44,6 @@ void MidiInput::RunLoop()
 	{
 		readResult = Pm_Read(this->stream, &event, 1);
 		if (readResult > 0) {
-			//std::cout << "status: " << Pm_MessageStatus(event.message) << ", data1: " << Pm_MessageData1(event.message) << ", data2: " << Pm_MessageData2(event.message) << std::endl;
 			MidiMessage msg(Pm_MessageData1(event.message), Pm_MessageData2(event.message));
 			this->queue->Add(msg);
 			if (readResult > 1) {

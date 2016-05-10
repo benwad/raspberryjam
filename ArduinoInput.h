@@ -5,6 +5,12 @@
 #include "WorkQueue.h"
 #include "ArduinoMessage.h"
 
+#if __platform_mac__
+#define PORTNAME "/dev/cu.usbmodem1411"
+#else
+#define PORTNAME "/dev/ttyACM0"
+#endif
+
 class ArduinoInput {
 
 	enum State {
@@ -12,7 +18,7 @@ class ArduinoInput {
 		ReadingMessageValue
 	};
 
-	const char *portname = "/dev/cu.usbmodem1411";
+	const char *portname = PORTNAME;
 	int fd;
 	char buf[32];
 	char numberBuf[4];
