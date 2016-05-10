@@ -18,7 +18,7 @@ MidiInput::MidiInput()
 
 	int numDevices = Pm_CountDevices();
 	std::cout << numDevices << " devices" << std::endl;
-	err = Pm_OpenInput(&(this->stream), 0, MIDI_DEVICE_ID, 128, 0, 0);
+	err = Pm_OpenInput(&(this->stream), MIDI_DEVICE_ID, 0, 128, 0, 0);
 	if (err != pmNoError) {
 		std::cout << "Error opening input: " << Pm_GetErrorText(err) << std::endl;
 	}
