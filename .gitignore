@@ -5,3 +5,5 @@ portaudio.h
 portaudio/
 raspberrysynth
 RaspberryJam/
+arduino/.build/
+arduino/lib/
