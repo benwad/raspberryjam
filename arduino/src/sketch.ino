@@ -1,11 +1,10 @@
-int potPins[] = { 0, 1 };
-int vals[] = { 0, 0 };
-int potCount = 2;
+int potPins[] = { 0, 1, 2 };
+int vals[] = { 0, 0, 0 };
+int potCount = 3;
 int tolerance = 2;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.println("Done");
   Serial.begin(9600);
 }
 
