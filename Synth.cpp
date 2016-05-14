@@ -28,9 +28,13 @@ FrameData Synth::NextFrame()
 		if (msg.messageType == 0) {
 			this->cutoffVal = msg.messageValue * 10000.0f;
 		}
-		else {
+		else if (msg.messageType == 1) {
 			float newWavelength = msg.messageValue * 20.0f;
-			this->filterLfo.SetParams(newWavelength, 1.0f);
+			this->filterLfo.SetWavelength(newWavelength);
+		}
+		else if (msg.messageType == 2) {
+			float newIntensity = msg.messageValue;
+			this->filterLfo.SetIntensity(newIntensity);
 		}
 	}
 
@@ -95,7 +99,9 @@ void Synth::SetFilterParams(float cutoff, float q)
 void Synth::UpdateFilterParams()
 {
 	float lfoValue = this->filterLfo.NextFrame();
-	this->SetFilterParams(this->cutoffVal * lfoValue, this->resonanceVal);
+	float cutoffValue = this->cutoffVal * ((lfoValue + 1.0f) / 5.0f);
+	//std::cout << cutoffValue << std::endl;
+	this->SetFilterParams(cutoffValue, this->resonanceVal);
 }
 
 void Synth::NoteOn()

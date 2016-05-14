@@ -12,6 +12,8 @@ class LFO {
 
 	public:
 		LFO() : phaseIncrement(0.5f), intensity(1.0f), phase(0.0f) {}
+		void SetWavelength(float wavelength);
+		void SetIntensity(float intensity);
 		void SetParams(
 			float wavelength,
 			float intensity

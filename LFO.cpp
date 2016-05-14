@@ -2,10 +2,20 @@
 
 #include <math.h>
 
-void LFO::SetParams(float wavelength, float intensity)
+void LFO::SetWavelength(float wavelength)
 {
 	this->phaseIncrement = wavelength / SAMPLE_RATE;
+}
+
+void LFO::SetIntensity(float intensity)
+{
 	this->intensity = intensity;
+}
+
+void LFO::SetParams(float wavelength, float intensity)
+{
+	this->SetWavelength(wavelength);
+	this->SetIntensity(intensity);
 }
 
 float LFO::NextFrame()
@@ -15,5 +25,5 @@ float LFO::NextFrame()
 		this->phase -= TWO_PI;
 	}
 
-	return sin(this->phase) + 1.0f;
+	return this->intensity * sin(this->phase);
 }
