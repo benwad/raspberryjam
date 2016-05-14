@@ -68,3 +68,8 @@ void ADSR::NoteOn() {
 void ADSR::NoteOff() {
 	this->state = ADSR::State::Release;
 }
+
+bool ADSR::IsActive()
+{
+	return this->state != ADSR::State::Off;
+}

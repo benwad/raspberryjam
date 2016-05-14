@@ -30,4 +30,5 @@ class ADSR {
 		float NextFrame();
 		void NoteOn();
 		void NoteOff();
+		bool IsActive();
 };

@@ -10,17 +10,6 @@ Synth::Synth()
 
 FrameData Synth::NextFrame()
 {
-	this->currentFrame.left_phase += increment;
-	if (this->currentFrame.left_phase >= 1.0f) {
-		this->currentFrame.left_phase -= 2.0f;
-	}
-	this->currentFrame.right_phase += increment;
-	if (this->currentFrame.right_phase >= 1.0f) {
-		this->currentFrame.right_phase -= 2.0f;
-	}
-
-	float envValue = this->envelope.NextFrame();
-
 	// See if we've got a new value from the input, and pop
 	// it if we do
 	if (this->cutoffQueue->Size() > 0) {
@@ -44,15 +33,32 @@ FrameData Synth::NextFrame()
 	if (this->noteQueue->Size() > 0) {
 		MidiMessage msg = this->noteQueue->Remove();
 		if (msg.Velocity() > 0) {
-			this->SetFrequency(msg.NoteFrequency());
-			this->NoteOn();
+			this->OnNoteOn(msg.NoteNum(), msg.Velocity());
 		}
 		else {
-			this->NoteOff();
+			this->OnNoteOff(msg.NoteNum(), msg.Velocity());
 		}
 	}
 
-	float frameVal = this->filter.Run(this->currentFrame.left_phase * envValue);
+	FrameData currentFrame = FrameData(0.0f, 0.0f);
+	float activeVoices = 0;
+
+	// Mix together the voices and apply the filter
+	for (int i=0; i < numVoices; i++) {
+		if (voices[i].IsActive()) {
+			FrameData nextFrame = voices[i].NextFrame();
+			currentFrame = currentFrame + nextFrame;
+			activeVoices += 1.0f;
+		}
+	}
+
+	if (activeVoices > 0) {
+		currentFrame = currentFrame / activeVoices;
+	}
+
+	//std::cout << "Current frame: " << currentFrame.left_phase << std::endl;
+
+	float frameVal = this->filter.Run(currentFrame.left_phase);
 
 	return FrameData(
 		frameVal,
@@ -65,6 +71,8 @@ void Synth::WriteFrames(unsigned long numFrames, float* out)
 	for (unsigned long i=0; i<numFrames; i++)
 	{
 		FrameData nextFrame = this->NextFrame();
+
+		//std::cout << nextFrame.left_phase << std::endl;
 
 		*out++ = nextFrame.left_phase; // left
 		*out++ = nextFrame.right_phase; // right
@@ -81,14 +89,22 @@ void Synth::SetNoteQueue(WorkQueue<MidiMessage>* queue)
 	this->noteQueue = queue;
 }
 
-void Synth::SetFrequency(float frequency)
+void Synth::OnNoteOn(int noteNumber, int velocity)
 {
-	/*
-	wavelength in frames: SAMPLE_RATE / frequency
-	we want to increase by 2.0f per cycle
-	so 2.0f / wavelength
-	*/
-	this->increment = 2.0f / (SAMPLE_RATE / frequency);
+	Voice* voice = this->FindFreeVoice();
+
+	voice->SetNoteNumber(noteNumber);
+	voice->NoteOn();
+}
+
+void Synth::OnNoteOff(int noteNumber, int velocity)
+{
+	for (int i=0; i < this->numVoices; i++) {
+		Voice& voice = this->voices[i];
+		if (voice.IsActive() && voice.GetNoteNumber() == noteNumber) {
+			voice.NoteOff();
+		}
+	}
 }
 
 void Synth::SetFilterParams(float cutoff, float q)
@@ -100,16 +116,18 @@ void Synth::UpdateFilterParams()
 {
 	float lfoValue = this->filterLfo.NextFrame();
 	float cutoffValue = this->cutoffVal * ((lfoValue + 1.0f) / 5.0f);
-	//std::cout << cutoffValue << std::endl;
 	this->SetFilterParams(cutoffValue, this->resonanceVal);
 }
 
-void Synth::NoteOn()
+Voice* Synth::FindFreeVoice()
 {
-	envelope.NoteOn();
-}
+	Voice* freeVoice = NULL;
+	for (int i=0; i < this->numVoices; i++) {
+		if (!this->voices[i].IsActive()) {
+			freeVoice = &(this->voices[i]);
+			break;
+		}
+	}
 
-void Synth::NoteOff()
-{
-	envelope.NoteOff();
+	return freeVoice;
 }
