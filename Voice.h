@@ -8,6 +8,8 @@ class Voice {
 	private:
 		ADSR envelope;
 		Oscillator osc1;
+		Oscillator osc2;
+		Oscillator osc3;
 		int noteNumber;
 
 	public:
