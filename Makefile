@@ -9,7 +9,8 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 	CFLAGS += -D __platform_mac__
 endif
-ifneq ($(filter arm%,$(UNAME_P)),)
+RASPBERRYPI = $(shell ./onapi)
+ifeq ($(RASPBERRYPI),Pi)
 	CFLAGS += -D __platform_rpi__
 	LDFLAGS += -lasound
 	LDFLAGS += -pthread
@@ -24,4 +25,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm $(OBJECTS)
+	rm -f $(OBJECTS)
