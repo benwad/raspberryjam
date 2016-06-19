@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-c -Wall -std=c++11 -g
 LDFLAGS=-lportaudio -lportmidi
-SOURCES=main.cpp Synth.cpp ADSR.cpp FilterButterworth24db.cpp ArduinoInput.cpp LFO.cpp MidiInput.cpp Voice.cpp Oscillator.cpp
+SOURCES=main.cpp Synth.cpp ADSR.cpp FilterButterworth24db.cpp ArduinoInput.cpp LFO.cpp MidiInput.cpp PolysynthVoice.cpp Oscillator.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=raspberrysynth
 

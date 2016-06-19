@@ -1,26 +1,15 @@
 #pragma once
 
-#include <utility>
-
-#include "Oscillator.h"
-#include "ADSR.h"
+struct FrameData;
 
 class Voice {
 
-	const static int numOscillators = 6;
-
-	private:
-		ADSR envelope;
-		std::pair<Oscillator, float> oscillators[numOscillators];
-		int noteNumber;
-		float gain;
-
 	public:
-		Voice();
-		FrameData NextFrame();
-		void SetNoteNumber(int noteNumber);
-		void NoteOn();
-		void NoteOff();
-		bool IsActive();
-		int GetNoteNumber();
+        virtual ~Voice() {};
+		virtual FrameData NextFrame() = 0;
+		virtual void SetNoteNumber(int noteNumber) = 0;
+		virtual void NoteOn() = 0;
+		virtual void NoteOff() = 0;
+		virtual bool IsActive() = 0;
+		virtual int GetNoteNumber() = 0;
 };

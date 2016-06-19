@@ -16,12 +16,13 @@ class Synth {
 		LFO filterLfo;
 		WorkQueue<ArduinoMessage<float> >* cutoffQueue;
 		WorkQueue<MidiMessage>* noteQueue;
-		Voice voices[numVoices];
+		Voice* voices[numVoices];
 		float cutoffVal;
 		float resonanceVal;
 
 	public:
 		Synth();
+		~Synth();
 		FrameData NextFrame();
 		void WriteFrames(unsigned long numFrames, float* out);
 		void SetCutoffQueue(WorkQueue<ArduinoMessage<float> >* queue);

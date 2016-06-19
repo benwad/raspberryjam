@@ -1,10 +1,8 @@
-#include "Voice.h"
-
-#include <iostream>
+#include "PolysynthVoice.h"
 
 #include "MidiNotes.h"
 
-Voice::Voice()
+PolysynthVoice::PolysynthVoice()
 {
 	this->oscillators[0].second = 0.4f;
 	this->oscillators[1].second = 0.2f;
@@ -16,7 +14,7 @@ Voice::Voice()
 	this->gain = 0.5f;
 }
 
-FrameData Voice::NextFrame()
+FrameData PolysynthVoice::NextFrame()
 {
 	float envValue = this->envelope.NextFrame();
 
@@ -29,7 +27,7 @@ FrameData Voice::NextFrame()
 	return oscMix * (this->gain * envValue);
 }
 
-void Voice::SetNoteNumber(int noteNumber)
+void PolysynthVoice::SetNoteNumber(int noteNumber)
 {
 	this->noteNumber = noteNumber;
 	float fundamental = midiFrequencies[noteNumber];
@@ -39,22 +37,22 @@ void Voice::SetNoteNumber(int noteNumber)
 	}
 }
 
-int Voice::GetNoteNumber()
+int PolysynthVoice::GetNoteNumber()
 {
 	return this->noteNumber;
 }
 
-void Voice::NoteOn()
+void PolysynthVoice::NoteOn()
 {
 	envelope.NoteOn();
 }
 
-void Voice::NoteOff()
+void PolysynthVoice::NoteOff()
 {
 	envelope.NoteOff();
 }
 
-bool Voice::IsActive()
+bool PolysynthVoice::IsActive()
 {
 	return envelope.IsActive();
 }

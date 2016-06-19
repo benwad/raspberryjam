@@ -8,6 +8,7 @@
 #include "WorkQueue.h"
 #include "MidiInput.h"
 #include "MidiMessage.h"
+#include "Oscillator.h"
 
 static int paCallback(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
 						const PaStreamCallbackTimeInfo *timeinfo,

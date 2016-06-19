@@ -1,11 +1,24 @@
 #include "Synth.h"
 
+#include "PolysynthVoice.h"
+
 Synth::Synth()
 	: cutoffVal(1600.0f),
 	resonanceVal(0.5f)
 {
 	this->SetFilterParams(cutoffVal, resonanceVal);
 	this->filterLfo.SetParams(1.0f, 0.5f);
+
+	for (int i=0; i < this->numVoices; i++) {
+		this->voices[i] = new PolysynthVoice();
+	}
+}
+
+Synth::~Synth()
+{
+	for (int i=0; i < this->numVoices; i++) {
+		delete this->voices[i];
+	}
 }
 
 FrameData Synth::NextFrame()
@@ -45,8 +58,8 @@ FrameData Synth::NextFrame()
 
 	// Mix together the voices and apply the filter
 	for (int i=0; i < numVoices; i++) {
-		if (voices[i].IsActive()) {
-			FrameData nextFrame = voices[i].NextFrame();
+		if (voices[i]->IsActive()) {
+			FrameData nextFrame = voices[i]->NextFrame();
 			currentFrame = currentFrame + nextFrame;
 			activeVoices += 1.0f;
 		}
@@ -89,9 +102,9 @@ void Synth::OnNoteOn(int noteNumber, int velocity)
 void Synth::OnNoteOff(int noteNumber, int velocity)
 {
 	for (int i=0; i < this->numVoices; i++) {
-		Voice& voice = this->voices[i];
-		if (voice.IsActive() && voice.GetNoteNumber() == noteNumber) {
-			voice.NoteOff();
+		Voice* voice = this->voices[i];
+		if (voice->IsActive() && voice->GetNoteNumber() == noteNumber) {
+			voice->NoteOff();
 		}
 	}
 }
@@ -112,8 +125,8 @@ Voice* Synth::FindFreeVoice()
 {
 	Voice* freeVoice = NULL;
 	for (int i=0; i < this->numVoices; i++) {
-		if (!this->voices[i].IsActive()) {
-			freeVoice = &(this->voices[i]);
+		if (!this->voices[i]->IsActive()) {
+			freeVoice = this->voices[i];
 			break;
 		}
 	}
