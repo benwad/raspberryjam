@@ -1,16 +1,23 @@
 #include "Oscillator.h"
 
 #include <iostream>
+#include <math.h>
 
 FrameData Oscillator::NextFrame()
 {
-	this->currentFrame.left_phase += increment;
-	if (this->currentFrame.left_phase >= 1.0f) {
-		this->currentFrame.left_phase -= 2.0f;
+	if (this->oscType == kOscillatorTypeSaw) {
+		this->currentFrame = this->currentFrame + this->increment;
+		if (this->currentFrame.left_phase >= 1.0f) {
+			this->currentFrame = this->currentFrame - 2.0f;
+		}
 	}
-	this->currentFrame.right_phase += increment;
-	if (this->currentFrame.right_phase >= 1.0f) {
-		this->currentFrame.right_phase -= 2.0f;
+	else if (this->oscType == kOscillatorTypeSine) {
+		this->phase += this->increment;
+		float sineValue = sin(this->phase);
+		this->currentFrame = FrameData(sineValue, sineValue);
+		if (this->phase > TWO_PI) {
+			this->phase -= TWO_PI;
+		}
 	}
 
 	return this->currentFrame;
@@ -23,5 +30,5 @@ void Oscillator::SetFrequency(float frequency)
 	we want to increase by 2.0f per cycle
 	so 2.0f / wavelength
 	*/
-	this->increment = 2.0f / (SAMPLE_RATE / frequency);
+	this->increment = TWO_PI / (SAMPLE_RATE / frequency);
 }

@@ -6,12 +6,14 @@
 
 Voice::Voice()
 {
-	oscillators[0].second = 0.4f;
-	oscillators[1].second = 0.2f;
-	oscillators[2].second = 0.1f;
-	oscillators[3].second = 0.1f;
-	oscillators[4].second = 0.1f;
-	oscillators[5].second = 0.1f;
+	this->oscillators[0].second = 0.4f;
+	this->oscillators[1].second = 0.2f;
+	this->oscillators[2].second = 0.1f;
+	this->oscillators[3].second = 0.1f;
+	this->oscillators[4].second = 0.1f;
+	this->oscillators[5].second = 0.1f;
+
+	this->gain = 0.5f;
 }
 
 FrameData Voice::NextFrame()
@@ -24,7 +26,7 @@ FrameData Voice::NextFrame()
 		oscMix = oscMix + (oscillators[i].first.NextFrame() * oscillators[i].second);
 	}
 
-	return oscMix * envValue;
+	return oscMix * (this->gain * envValue);
 }
 
 void Voice::SetNoteNumber(int noteNumber)

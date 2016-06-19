@@ -1,5 +1,7 @@
 #include "LFO.h"
 
+#include "Oscillator.h"
+
 #include <math.h>
 
 void LFO::SetWavelength(float wavelength)

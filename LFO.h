@@ -1,8 +1,5 @@
 #pragma once
 
-#define SAMPLE_RATE (44100)
-#define TWO_PI 6.2831853
-
 class LFO {
 
 	private:

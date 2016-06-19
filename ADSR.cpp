@@ -3,7 +3,7 @@
 #include "ADSR.h"
 
 ADSR::ADSR() {
-	this->SetParams(1000, 2000, 0.5f, 44100);
+	this->SetParams(500, 22000, 0.5f, 10000);
 	this->state = State::Off;
 }
 

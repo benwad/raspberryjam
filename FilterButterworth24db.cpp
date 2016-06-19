@@ -2,10 +2,13 @@
 
 #define BUDDA_Q_SCALE 6.f
 
+#include "FrameData.h"
+
 #include "FilterButterworth24db.h"
 
 CFilterButterworth24db::CFilterButterworth24db(void)
 {
+    this->doStereo = false;
     this->history1 = 0.f;
     this->history2 = 0.f;
     this->history3 = 0.f;
@@ -97,4 +100,21 @@ float CFilterButterworth24db::Run(float input)
     this->history3 = new_hist;
 
     return output;
+}
+
+FrameData CFilterButterworth24db::Run(FrameData input)
+{
+    if (this->doStereo) {
+        return FrameData(
+            this->Run(input.left_phase),
+            this->Run(input.right_phase)
+        );
+    }
+    else {
+        float output = this->Run(input.left_phase);
+        return FrameData(
+            output,
+            output
+        );
+    }
 }

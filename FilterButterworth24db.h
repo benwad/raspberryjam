@@ -5,6 +5,8 @@
 	http://musicdsp.org/showArchiveComment.php?ArchiveID=243
 */
 
+struct FrameData;
+
 class CFilterButterworth24db
 {
 public:
@@ -13,6 +15,7 @@ public:
     void SetSampleRate(float fs);
     void Set(float cutoff, float q);
     float Run(float input);
+    FrameData Run(FrameData input);
 
 private:
     float t0, t1, t2, t3;
@@ -20,4 +23,5 @@ private:
     float history1, history2, history3, history4;
     float gain;
     float min_cutoff, max_cutoff;
+	bool doStereo;
 };

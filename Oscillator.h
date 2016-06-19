@@ -1,32 +1,27 @@
 #pragma once
 
 #define SAMPLE_RATE (44100)
+#define TWO_PI 6.2831853
 
-struct FrameData
-{
-	float left_phase;
-	float right_phase;
+#include "FrameData.h"
 
-	FrameData() : left_phase(0.0f), right_phase(0.0f) {};
-	FrameData(float left_phase, float right_phase) : left_phase(left_phase), right_phase(right_phase) {}
-	FrameData operator* (const float x) { return FrameData(left_phase * x, right_phase * x); }
-	FrameData operator+ (const FrameData other) {
-		return FrameData(
-			left_phase + other.left_phase,
-			right_phase + other.right_phase
-		);
-	}
-	FrameData operator/ (const float x) { return FrameData(left_phase / x, right_phase / x); }
+enum OscType {
+	kOscillatorTypeSine,
+	kOscillatorTypeSaw,
+	kOscillatorTypeSquare
 };
 
 class Oscillator {
 
 	private:
 		FrameData currentFrame;
+		float phase = 0.0f;
 		float increment;
+		OscType oscType = kOscillatorTypeSaw;
 
 	public:
 		FrameData NextFrame();
+		void SetOscType(OscType oscType) { this->oscType = oscType; }
 		void SetFrequency(float frequency);
 
 };

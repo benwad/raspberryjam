@@ -2,10 +2,10 @@
 
 Synth::Synth()
 	: cutoffVal(1600.0f),
-	resonanceVal(0.8f)
+	resonanceVal(0.5f)
 {
 	this->SetFilterParams(cutoffVal, resonanceVal);
-	this->filterLfo.SetParams(1.0f, 1.0f);
+	this->filterLfo.SetParams(1.0f, 0.5f);
 }
 
 FrameData Synth::NextFrame()
@@ -52,18 +52,7 @@ FrameData Synth::NextFrame()
 		}
 	}
 
-	if (activeVoices > 0) {
-		currentFrame = currentFrame / activeVoices;
-	}
-
-	//std::cout << "Current frame: " << currentFrame.left_phase << std::endl;
-
-	float frameVal = this->filter.Run(currentFrame.left_phase);
-
-	return FrameData(
-		frameVal,
-		frameVal
-	);
+	return this->filter.Run(currentFrame);
 }
 
 void Synth::WriteFrames(unsigned long numFrames, float* out)

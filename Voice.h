@@ -13,6 +13,7 @@ class Voice {
 		ADSR envelope;
 		std::pair<Oscillator, float> oscillators[numOscillators];
 		int noteNumber;
+		float gain;
 
 	public:
 		Voice();
