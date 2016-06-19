@@ -3,7 +3,7 @@
 #include "ADSR.h"
 
 ADSR::ADSR() {
-	this->SetParams(500, 22000, 0.5f, 10000);
+	this->SetParams(44100, 44100, 0.5f, 44100);
 	this->state = State::Off;
 }
 
@@ -25,6 +25,7 @@ void ADSR::SetParams(	unsigned int attackTime,
 
 	// Release goes from sustain -> 0.0f in releaseTime frames
 	this->releaseSpeed = sustain / releaseTime;
+
 }
 
 float ADSR::NextFrame() {
@@ -34,14 +35,14 @@ float ADSR::NextFrame() {
 			break;
 		case ADSR::State::Attack:
 			this->currentLevel += this->attackSpeed;
-			if (this->currentLevel > 1.0f) {
+			if (this->currentLevel >= 1.0f) {
 				this->currentLevel = 1.0f;
 				this->state = ADSR::State::Decay;
 			}
 			break;
 		case ADSR::State::Decay:
 			this->currentLevel -= this->decaySpeed;
-			if (this->currentLevel < this->sustain) {
+			if (this->currentLevel <= this->sustain) {
 				this->currentLevel = this->sustain;
 				this->state = ADSR::State::Sustain;
 			}
@@ -51,7 +52,7 @@ float ADSR::NextFrame() {
 			break;
 		case ADSR::State::Release:
 			this->currentLevel -= this->releaseSpeed;
-			if (this->currentLevel < 0.0f) {
+			if (this->currentLevel <= 0.0f) {
 				this->currentLevel = 0.0f;
 				this->state = ADSR::State::Off;
 			}

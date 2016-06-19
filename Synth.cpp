@@ -1,16 +1,17 @@
 #include "Synth.h"
 
-#include "PolysynthVoice.h"
+#include "StringVoice.h"
+#include "FrameData.h"
 
 Synth::Synth()
-	: cutoffVal(1600.0f),
-	resonanceVal(0.5f)
+	: cutoffVal(8800.0f),
+	resonanceVal(0.0f)
 {
 	this->SetFilterParams(cutoffVal, resonanceVal);
-	this->filterLfo.SetParams(1.0f, 0.5f);
+	this->filterLfo.SetParams(1.0f, 0.2f);
 
 	for (int i=0; i < this->numVoices; i++) {
-		this->voices[i] = new PolysynthVoice();
+		this->voices[i] = new StringVoice();
 	}
 }
 
@@ -73,8 +74,6 @@ void Synth::WriteFrames(unsigned long numFrames, float* out)
 	for (unsigned long i=0; i<numFrames; i++)
 	{
 		FrameData nextFrame = this->NextFrame();
-
-		//std::cout << nextFrame.left_phase << std::endl;
 
 		*out++ = nextFrame.left_phase; // left
 		*out++ = nextFrame.right_phase; // right
